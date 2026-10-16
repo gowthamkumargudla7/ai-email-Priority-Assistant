@@ -28,6 +28,27 @@ class OllamaCloudTests(unittest.TestCase):
             "https://ollama.com/api/chat",
         )
 
+    def test_full_chat_endpoint_is_not_duplicated(self):
+        response = Mock()
+        response.raise_for_status.return_value = None
+        response.json.return_value = {"message": {"content": "Food"}}
+        with (
+            patch.object(model, "OLLAMA_API_KEY", ""),
+            patch.object(
+                model,
+                "OLLAMA_URL",
+                "http://localhost:11434/api/chat",
+            ),
+            patch("model.requests.post", return_value=response) as post,
+        ):
+            category = model.categorize_expense("Lunch")
+
+        self.assertEqual(category, "Food")
+        self.assertEqual(
+            post.call_args.args[0],
+            "http://localhost:11434/api/chat",
+        )
+
     def test_local_requests_do_not_send_auth_header(self):
         response = Mock()
         response.raise_for_status.return_value = None
@@ -40,6 +61,10 @@ class OllamaCloudTests(unittest.TestCase):
 
         self.assertTrue(available)
         self.assertEqual(get.call_args.kwargs["headers"], {})
+        self.assertEqual(
+            get.call_args.args[0],
+            "http://localhost:11434/api/tags",
+        )
 
 
 if __name__ == "__main__":

@@ -24,13 +24,16 @@ A local-first expense tracker built with Python, Streamlit, SQLite, and Ollama.
 Expense tracking works without Ollama. For local AI features, install and run
 Ollama, check the exact model tag with `ollama list`, and set `OLLAMA_MODEL`
 if needed. The default local model is `gemma4:e2b`. Set `OLLAMA_URL` if Ollama
-is not running at `http://localhost:11434`.
+is not running at `http://localhost:11434/api/chat`. This setting also accepts
+the server base URL `http://localhost:11434`.
 
 For a hosted deployment, configure the `OLLAMA_API_KEY` secret in the hosting
 provider's environment settings using a key from
 [Ollama settings](https://ollama.com/settings/keys). When the key is set, the
-app defaults to `https://ollama.com` and `gemma4:31b`; `OLLAMA_URL` and
-`OLLAMA_MODEL` can override these values. Keep API keys out of source control.
+app defaults to `https://ollama.com/api/chat` and `gemma4:31b`; `OLLAMA_URL`
+and `OLLAMA_MODEL` can override these values. A `localhost` URL on a hosted
+deployment refers to the app container, not your personal computer. Keep API
+keys out of source control.
 
 ## Data and privacy
 

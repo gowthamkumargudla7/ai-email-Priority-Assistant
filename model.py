@@ -21,7 +21,11 @@ CATEGORIES = [
 OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "").strip()
 OLLAMA_URL = os.getenv(
     "OLLAMA_URL",
-    "https://ollama.com" if OLLAMA_API_KEY else "http://localhost:11434",
+    (
+        "https://ollama.com/api/chat"
+        if OLLAMA_API_KEY
+        else "http://localhost:11434/api/chat"
+    ),
 ).rstrip("/")
 DEFAULT_MODEL = os.getenv(
     "OLLAMA_MODEL",
@@ -35,11 +39,23 @@ def _auth_headers() -> dict[str, str]:
     return {}
 
 
+def _chat_url() -> str:
+    if OLLAMA_URL.endswith("/api/chat"):
+        return OLLAMA_URL
+    return f"{OLLAMA_URL}/api/chat"
+
+
+def _tags_url() -> str:
+    if OLLAMA_URL.endswith("/api/chat"):
+        return f"{OLLAMA_URL[:-len('/api/chat')]}/api/tags"
+    return f"{OLLAMA_URL}/api/tags"
+
+
 def ollama_status() -> tuple[bool, str]:
     """Return whether the configured Ollama service is responding."""
     try:
         response = requests.get(
-            f"{OLLAMA_URL}/api/tags",
+            _tags_url(),
             headers=_auth_headers(),
             timeout=3,
         )
@@ -60,7 +76,7 @@ def _chat(prompt: str, model_name: str = "", timeout: int = 90) -> str:
 
     try:
         response = requests.post(
-            f"{OLLAMA_URL}/api/chat",
+            _chat_url(),
             json={
                 "model": model,
                 "messages": [

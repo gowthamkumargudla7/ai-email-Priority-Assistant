@@ -20,14 +20,19 @@ filtering, summaries, deletion, and CSV export work without an AI model.
 
 For local development, install and start [Ollama](https://ollama.com/), then
 set `OLLAMA_MODEL` to a model tag installed on your machine. The default is
-`gemma4:e2b`. Set `OLLAMA_URL` to change the Ollama server address.
+`gemma4:e2b`. `OLLAMA_URL` defaults to
+`http://localhost:11434/api/chat`; it also accepts the Ollama server base URL
+`http://localhost:11434`.
 
 The hosted app can use Ollama Cloud. Create an API key in
 [Ollama settings](https://ollama.com/settings/keys), then add it as the
 `OLLAMA_API_KEY` secret in the Render service's Environment settings. Do not
 put the key in source code or share it in chat. When this key is configured,
-the app defaults to `https://ollama.com` and model `gemma4:31b`; optionally
-set `OLLAMA_URL` or `OLLAMA_MODEL` in Render to override those defaults.
+the app defaults to `https://ollama.com/api/chat` and model `gemma4:31b`;
+optionally set `OLLAMA_URL` or `OLLAMA_MODEL` in Render to override those
+defaults. `http://localhost:11434/api/chat` on Render points to the Render
+container itself, not Ollama running on your personal computer; use Ollama
+Cloud or a separately hosted, secured Ollama endpoint there.
 
 AI requests are sent to the configured Ollama service: expense descriptions
 for category suggestions, and the selected date range's aggregated totals,
