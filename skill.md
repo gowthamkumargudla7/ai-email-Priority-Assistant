@@ -21,15 +21,21 @@ A local-first expense tracker built with Python, Streamlit, SQLite, and Ollama.
 4. Start the app: `python -m streamlit run main.py`
 5. Open `http://localhost:8501`.
 
-Expense tracking works without Ollama. For AI features, install and run Ollama,
-check the exact model tag with `ollama list`, and set `OLLAMA_MODEL` if needed.
-The default model is `gemma4:e2b`. Set `OLLAMA_URL` if Ollama is not running at
-`http://localhost:11434`.
+Expense tracking works without Ollama. For local AI features, install and run
+Ollama, check the exact model tag with `ollama list`, and set `OLLAMA_MODEL`
+if needed. The default local model is `gemma4:e2b`. Set `OLLAMA_URL` if Ollama
+is not running at `http://localhost:11434`.
+
+For a hosted deployment, configure the `OLLAMA_API_KEY` secret in the hosting
+provider's environment settings using a key from
+[Ollama settings](https://ollama.com/settings/keys). When the key is set, the
+app defaults to `https://ollama.com` and `gemma4:31b`; `OLLAMA_URL` and
+`OLLAMA_MODEL` can override these values. Keep API keys out of source control.
 
 ## Data and privacy
 
 Expense data stays in the local SQLite file `expenses.db` by default. Set
-`EXPENSE_DB_PATH` to store it elsewhere. AI features send the expense
-description or aggregated totals to the configured Ollama service; individual
-transactions are not sent to the budgeting assistant. Do not enter bank
-passwords, full card numbers, or other credentials.
+`EXPENSE_DB_PATH` to store it elsewhere. AI features send the expense description or aggregated totals to the
+configured Ollama service; individual transactions are not sent to the
+budgeting assistant. Do not enter bank passwords, full card numbers, or other
+credentials.

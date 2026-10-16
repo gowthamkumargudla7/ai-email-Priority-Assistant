@@ -18,14 +18,31 @@ CATEGORIES = [
     "Other",
 ]
 
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434").rstrip("/")
-DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "gemma4:e2b")
+OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "").strip()
+OLLAMA_URL = os.getenv(
+    "OLLAMA_URL",
+    "https://ollama.com" if OLLAMA_API_KEY else "http://localhost:11434",
+).rstrip("/")
+DEFAULT_MODEL = os.getenv(
+    "OLLAMA_MODEL",
+    "gemma4:31b" if OLLAMA_API_KEY else "gemma4:e2b",
+)
+
+
+def _auth_headers() -> dict[str, str]:
+    if OLLAMA_API_KEY:
+        return {"Authorization": f"Bearer {OLLAMA_API_KEY}"}
+    return {}
 
 
 def ollama_status() -> tuple[bool, str]:
     """Return whether the configured Ollama service is responding."""
     try:
-        response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=3)
+        response = requests.get(
+            f"{OLLAMA_URL}/api/tags",
+            headers=_auth_headers(),
+            timeout=3,
+        )
         response.raise_for_status()
         return True, "Ollama is connected."
     except requests.RequestException:
@@ -61,6 +78,7 @@ def _chat(prompt: str, model_name: str = "", timeout: int = 90) -> str:
                 "stream": False,
                 "options": {"temperature": 0.2},
             },
+            headers=_auth_headers(),
             timeout=timeout,
         )
         response.raise_for_status()

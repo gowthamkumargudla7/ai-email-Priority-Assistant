@@ -18,10 +18,21 @@ filtering, summaries, deletion, and CSV export work without an AI model.
 
 ## Optional AI setup
 
-Install and start [Ollama](https://ollama.com/), then set `OLLAMA_MODEL` to a
-model tag installed on your machine. The default is `gemma4:e2b`. Set
-`OLLAMA_URL` to change the Ollama server address. AI features use that Ollama
-service; they do not send email or financial data to a hosted AI provider.
+For local development, install and start [Ollama](https://ollama.com/), then
+set `OLLAMA_MODEL` to a model tag installed on your machine. The default is
+`gemma4:e2b`. Set `OLLAMA_URL` to change the Ollama server address.
+
+The hosted app can use Ollama Cloud. Create an API key in
+[Ollama settings](https://ollama.com/settings/keys), then add it as the
+`OLLAMA_API_KEY` secret in the Render service's Environment settings. Do not
+put the key in source code or share it in chat. When this key is configured,
+the app defaults to `https://ollama.com` and model `gemma4:31b`; optionally
+set `OLLAMA_URL` or `OLLAMA_MODEL` in Render to override those defaults.
+
+AI requests are sent to the configured Ollama service: expense descriptions
+for category suggestions, and the selected date range's aggregated totals,
+category amounts, and question for budgeting observations. The app does not
+send these requests to a separate AI provider.
 
 Set `EXPENSE_DB_PATH` to change where the SQLite database is stored. See
 [skill.md](./skill.md) for additional details.
