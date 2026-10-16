@@ -40,6 +40,24 @@ def suggest_category() -> None:
         st.session_state["category_error"] = str(error)
 
 
+def add_expense_from_form() -> None:
+    try:
+        add_expense(
+            st.session_state.get("description", ""),
+            st.session_state["entry_amount"],
+            st.session_state["entry_date"],
+            st.session_state["entry_category"],
+        )
+    except ValueError as error:
+        st.session_state["add_expense_error"] = str(error)
+        st.session_state["add_expense_success"] = False
+    else:
+        st.session_state["description"] = ""
+        st.session_state["entry_category"] = "Other"
+        st.session_state["add_expense_error"] = ""
+        st.session_state["add_expense_success"] = True
+
+
 st.markdown(
     """
     <style>
@@ -61,42 +79,46 @@ with st.sidebar:
     st.caption("A calmer view of your money.")
     st.divider()
     st.subheader("Add an expense")
-    description = st.text_input(
+    st.text_input(
         "What was it for?",
         key="description",
         placeholder="e.g. Weekly groceries",
         max_chars=240,
     )
-    amount = st.number_input(
+    st.number_input(
         "Amount (₹)",
         min_value=0.01,
         value=250.00,
         step=50.00,
         format="%.2f",
+        key="entry_amount",
     )
-    expense_date = st.date_input("Date", value=date.today())
+    st.date_input(
+        "Date",
+        value=date.today(),
+        key="entry_date",
+    )
 
     st.button("Suggest category with AI", on_click=suggest_category)
     if st.session_state.get("category_error"):
         st.error(st.session_state["category_error"])
 
-    category = st.selectbox(
+    st.selectbox(
         "Category",
         CATEGORIES,
         key="entry_category",
         index=CATEGORIES.index("Other"),
     )
-    if st.button("Add expense", type="primary", use_container_width=True):
-        try:
-            add_expense(description, amount, expense_date, category)
-        except ValueError as error:
-            st.error(str(error))
-        else:
-            st.session_state["description"] = ""
-            st.session_state["entry_category"] = "Other"
-            st.session_state["category_error"] = ""
-            st.success("Expense added.")
-            st.rerun()
+    st.button(
+        "Add expense",
+        type="primary",
+        use_container_width=True,
+        on_click=add_expense_from_form,
+    )
+    if st.session_state.get("add_expense_success"):
+        st.success("Expense added.")
+    if st.session_state.get("add_expense_error"):
+        st.error(st.session_state["add_expense_error"])
 
     st.divider()
     st.subheader("Filters")
